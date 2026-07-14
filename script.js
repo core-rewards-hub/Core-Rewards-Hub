@@ -1,12 +1,14 @@
 const connectButton = document.getElementById("connectWallet");
 const walletAddress = document.getElementById("walletAddress");
 const status = document.getElementById("status");
-const networkName = document.getElementById("networkName");
-const walletBalance = document.getElementById("walletBalance");
+const network = document.getElementById("network");
+const balance = document.getElementById("balance");
 const copyButton = document.getElementById("copyButton");
 
+const CORE_CHAIN_ID = "0x45c"; // 1116
+
 async function connectWallet() {
-  if (typeof window.ethereum === "undefined") {
+  if (!window.ethereum) {
     alert("Please install MetaMask or Core Wallet.");
     return;
   }
@@ -16,53 +18,60 @@ async function connectWallet() {
       method: "eth_requestAccounts"
     });
 
-    const address = accounts[0];
-
-    // Show full wallet address
-    walletAddress.textContent = address;
-
-    // Status
-    status.textContent = "Connected";
-
-    // Network
-    const chainId = await window.ethereum.request({
+    let chainId = await window.ethereum.request({
       method: "eth_chainId"
     });
 
-    const networks = {
-      "0x1": "Ethereum Mainnet",
-      "0x45c": "Core DAO Mainnet",
-      "0x5": "Goerli Testnet",
-      "0xaa36a7": "Sepolia Testnet"
-    };
+    // Switch to Core Mainnet
+    if (chainId !== CORE_CHAIN_ID) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: CORE_CHAIN_ID }]
+        });
 
-    networkName.textContent = networks[chainId] || chainId;
+        chainId = CORE_CHAIN_ID;
 
-    // Balance
-    const balance = await window.ethereum.request({
+      } catch (switchError) {
+
+        // Add Core Mainnet if missing
+        if (switchError.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: CORE_CHAIN_ID,
+              chainName: "Core Blockchain",
+              nativeCurrency: {
+                name: "CORE",
+                symbol: "CORE",
+                decimals: 18
+              },
+              rpcUrls: [
+                "https://rpc.coredao.org"
+              ],
+              blockExplorerUrls: [
+                "https://scan.coredao.org"
+              ]
+            }]
+          });
+
+          chainId = CORE_CHAIN_ID;
+        } else {
+          throw switchError;
+        }
+      }
+    }
+
+    const address = accounts[0];
+
+    walletAddress.textContent = address;
+    status.textContent = "Connected";
+    network.textContent = "Core Mainnet";
+
+    const rawBalance = await window.ethereum.request({
       method: "eth_getBalance",
       params: [address, "latest"]
     });
 
-    const balanceInCore = (parseInt(balance, 16) / 1e18).toFixed(4);
-    walletBalance.textContent = balanceInCore + " CORE";
-
-    // Update button
-    connectButton.textContent = "Wallet Connected";
-    connectButton.disabled = true;
-
-    // Copy button
-    copyButton.style.display = "inline-block";
-
-    copyButton.onclick = () => {
-      navigator.clipboard.writeText(address);
-      alert("Wallet address copied!");
-    };
-
-  } catch (error) {
-    console.log(error);
-    alert("Connection cancelled.");
-  }
-}
-
-connectButton.addEventListener("click", connectWallet);
+    const coreBalance = (
+      parseInt(raw
