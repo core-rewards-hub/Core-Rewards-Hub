@@ -1,87 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Core Rewards Hub</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core Rewards Hub</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header>
+  <div class="logo">
     <h2>Core Rewards Hub</h2>
+  </div>
 
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Dashboard</a>
-        <a href="#">Learn</a>
-        <a href="#">Projects</a>
-        <a href="#">News</a>
-    </nav>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Dashboard</a>
+    <a href="#">Projects</a>
+    <a href="#">Learn</a>
+    <a href="#">News</a>
+  </nav>
 </header>
 
 <section class="hero">
 
-<h1>Welcome to the Future of Core DAO</h1>
+  <h1>Welcome to the Future of Core DAO</h1>
 
-<p>
-Connect your wallet, monitor your CORE assets,
-discover ecosystem projects and stay updated.
-</p>
+  <p>
+    Connect your wallet, monitor your CORE assets,
+    discover ecosystem projects and stay updated.
+  </p>
 
-<div class="wallet-card">
+  <div class="wallet-card">
 
-<h2>Wallet Dashboard</h2>
+    <h2>Wallet Dashboard</h2>
 
-<p><strong>Status:</strong>
-<span id="status">Not Connected</span>
-</p>
+    <p><strong>Status:</strong></p>
+    <p id="status">Not Connected</p>
 
-<p><strong>Wallet:</strong></p>
-<p id="walletAddress">----------</p>
+    <p><strong>Wallet Address:</strong></p>
+    <p id="walletAddress">----------</p>
 
-<p><strong>Network:</strong></p>
-<p id="network">Unknown</p>
+    <p><strong>Network:</strong></p>
+    <p id="network">Unknown</p>
 
-<p><strong>Balance:</strong></p>
-<p id="balance">0.0000 CORE</p>
+    <p><strong>Balance:</strong></p>
+    <p id="balance">0.0000 CORE</p>
 
-<button id="connectWallet">
-Connect Wallet
-</button>
+    <button id="connectWallet">
+      Connect Wallet
+    </button>
 
-<button id="copyButton" style="display:none;">
-Copy Address
-</button>
+    <button id="copyButton" style="display:none;">
+      Copy Address
+    </button>
 
-</div>
+  </div>
+
+</section>
+
+<section class="features">
+
+  <div class="card">
+    <h3>Wallet</h3>
+    <p>Secure wallet connection powered by MetaMask and Core Wallet.</p>
+  </div>
+
+  <div class="card">
+    <h3>CORE Price</h3>
+    <p>Live market price coming soon.</p>
+  </div>
+
+  <div class="card">
+    <h3>Projects</h3>
+    <p>Explore trusted Core DAO ecosystem projects.</p>
+  </div>
+
+  <div class="card">
+    <h3>Learn</h3>
+    <p>Beginner and advanced blockchain tutorials.</p>
+  </div>
 
 </section>
 
-<section class="cards">
-
-<div class="card">
-<h3>Wallet</h3>
-<p>Connect your wallet securely.</p>
-</div>
-
-<div class="card">
-<h3>CORE Price</h3>
-<p>Live market data coming soon.</p>
-</div>
-
-<div class="card">
-<h3>Projects</h3>
-<p>Discover trusted Core ecosystem apps.</p>
-</div>
-
-<div class="card">
-<h3>Learn</h3>
-<p>Guides for beginners and experts.</p>
-</div>
-
-</section>
+<footer>
+  <p>© 2026 Core Rewards Hub. All Rights Reserved.</p>
+</footer>
 
 <script src="script.js"></script>
 
