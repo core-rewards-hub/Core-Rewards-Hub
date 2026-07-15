@@ -1,3 +1,4 @@
+alert("script.js loaded");
 const connectButton = document.getElementById("connectWallet");
 const disconnectButton = document.getElementById("disconnectButton");
 const walletAddress = document.getElementById("walletAddress");
