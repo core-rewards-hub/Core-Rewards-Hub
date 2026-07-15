@@ -14,44 +14,55 @@ const CORE_CHAIN = {
     symbol: "CORE",
     decimals: 18
   },
-  rpcUrls: ["https://rpc.coredao.org"],
-  blockExplorerUrls: ["https://scan.coredao.org"]
+  rpcUrls: [
+    "https://rpc.coredao.org"
+  ],
+  blockExplorerUrls: [
+    "https://scan.coredao.org"
+  ]
 };
 
 let currentAddress = "";
 
+// Connect Wallet
 async function connectWallet() {
+
   if (typeof window.ethereum === "undefined") {
     alert("Please open this website inside MetaMask or Core Wallet.");
     return;
   }
 
   try {
-    // Connect wallet
+
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
     });
 
     currentAddress = accounts[0];
 
-    // Current network
     let chainId = await window.ethereum.request({
       method: "eth_chainId"
     });
 
-    // Switch to Core Mainnet if needed
+    // Switch to Core Mainnet
     if (chainId !== CORE_CHAIN.chainId) {
+
       try {
+
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: CORE_CHAIN.chainId }]
         });
+
       } catch (switchError) {
+
         if (switchError.code === 4902) {
+
           await window.ethereum.request({
             method: "wallet_addEthereumChain",
             params: [CORE_CHAIN]
           });
+
         } else {
           throw switchError;
         }
@@ -60,17 +71,23 @@ async function connectWallet() {
       chainId = await window.ethereum.request({
         method: "eth_chainId"
       });
+
     }
 
-    // Display wallet
+    // Wallet Address
     walletAddress.textContent = currentAddress;
-    status.textContent = "Connected";
-    network.textContent =
-      chainId === CORE_CHAIN.chainId
-        ? "Core Mainnet"
-        : chainId;
 
-    // Get balance
+    // Status
+    status.textContent = "Connected";
+
+    // Network
+    if (chainId === CORE_CHAIN.chainId) {
+      network.textContent = "Core Mainnet";
+    } else {
+      network.textContent = chainId;
+    }
+
+    // Balance
     const rawBalance = await window.ethereum.request({
       method: "eth_getBalance",
       params: [currentAddress, "latest"]
@@ -81,20 +98,29 @@ async function connectWallet() {
 
     balance.textContent = `${coreBalance} CORE`;
 
-    // Update buttons
-    connectButton.textContent = "Wallet Connected";
+    // Buttons
     connectButton.disabled = true;
+    connectButton.textContent = "Wallet Connected";
 
-    copyButton.style.display = "block";
-    disconnectButton.style.display = "block";
+    disconnectButton.style.display = "inline-block";
+    copyButton.style.display = "inline-block";
 
   } catch (error) {
+
     console.error(error);
-    alert(error.message || "Wallet connection failed.");
+
+    alert(
+      error.message ||
+      "Wallet connection failed."
+    );
+
   }
+
 }
 
+// Disconnect
 function disconnectWallet() {
+
   currentAddress = "";
 
   status.textContent = "Not Connected";
@@ -105,19 +131,67 @@ function disconnectWallet() {
   connectButton.disabled = false;
   connectButton.textContent = "Connect Wallet";
 
-  copyButton.style.display = "none";
   disconnectButton.style.display = "none";
+  copyButton.style.display = "none";
+
 }
 
-copyButton.addEventListener("click", async () => {
+// Copy Address
+async function copyAddress() {
+
   if (!currentAddress) return;
 
   try {
-    await navigator.clipboard.writeText(currentAddress);
-    alert("Wallet address copied.");
-  } catch (err) {
-    alert("Unable to copy address.");
-  }
-});
 
-disconnectButton.addEvent
+    await navigator.clipboard.writeText(currentAddress);
+
+    alert("Wallet address copied.");
+
+  } catch (err) {
+
+    alert("Unable to copy wallet address.");
+
+  }
+
+}
+
+// Wallet Changed
+if (window.ethereum) {
+
+  window.ethereum.on("accountsChanged", (accounts) => {
+
+    if (accounts.length === 0) {
+
+      disconnectWallet();
+
+    } else {
+
+      connectWallet();
+
+    }
+
+  });
+
+  window.ethereum.on("chainChanged", () => {
+
+    connectWallet();
+
+  });
+
+}
+
+// Button Events
+connectButton.addEventListener(
+  "click",
+  connectWallet
+);
+
+disconnectButton.addEventListener(
+  "click",
+  disconnectWallet
+);
+
+copyButton.addEventListener(
+  "click",
+  copyAddress
+);
