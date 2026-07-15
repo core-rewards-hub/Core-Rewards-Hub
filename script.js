@@ -1,4 +1,3 @@
-alert("script.js loaded");
 const connectButton = document.getElementById("connectWallet");
 const disconnectButton = document.getElementById("disconnectButton");
 const walletAddress = document.getElementById("walletAddress");
@@ -6,9 +5,10 @@ const status = document.getElementById("status");
 const network = document.getElementById("network");
 const balance = document.getElementById("balance");
 const copyButton = document.getElementById("copyButton");
+const switchNetworkButton = document.getElementById("switchNetworkButton");
 
 const CORE_CHAIN = {
-  chainId: "0x45c", // 1116
+  chainId: "0x45c",
   chainName: "Core Blockchain",
   nativeCurrency: {
     name: "CORE",
@@ -25,10 +25,38 @@ const CORE_CHAIN = {
 
 let currentAddress = "";
 
-// Connect Wallet
+async function switchToCore() {
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: CORE_CHAIN.chainId }]
+    });
+
+    connectWallet();
+
+  } catch (error) {
+
+    if (error.code === 4902) {
+
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [CORE_CHAIN]
+      });
+
+      connectWallet();
+
+    } else {
+
+      alert("Unable to switch to Core Mainnet.");
+
+    }
+
+  }
+}
+
 async function connectWallet() {
 
-  if (typeof window.ethereum === "undefined") {
+  if (!window.ethereum) {
     alert("Please open this website inside MetaMask or Core Wallet.");
     return;
   }
@@ -45,8 +73,9 @@ async function connectWallet() {
       method: "eth_chainId"
     });
 
-    // Switch to Core Mainnet
     if (chainId !== CORE_CHAIN.chainId) {
+
+      switchNetworkButton.style.display = "inline-block";
 
       try {
 
@@ -55,40 +84,37 @@ async function connectWallet() {
           params: [{ chainId: CORE_CHAIN.chainId }]
         });
 
-      } catch (switchError) {
+        chainId = CORE_CHAIN.chainId;
 
-        if (switchError.code === 4902) {
+      } catch (error) {
+
+        if (error.code === 4902) {
 
           await window.ethereum.request({
             method: "wallet_addEthereumChain",
             params: [CORE_CHAIN]
           });
 
-        } else {
-          throw switchError;
+          chainId = CORE_CHAIN.chainId;
+
         }
+
       }
 
-      chainId = await window.ethereum.request({
-        method: "eth_chainId"
-      });
+    } else {
+
+      switchNetworkButton.style.display = "none";
 
     }
 
-    // Wallet Address
     walletAddress.textContent = currentAddress;
-
-    // Status
     status.textContent = "Connected";
 
-    // Network
-    if (chainId === CORE_CHAIN.chainId) {
-      network.textContent = "Core Mainnet";
-    } else {
-      network.textContent = chainId;
-    }
+    network.textContent =
+      chainId === CORE_CHAIN.chainId
+        ? "Core Mainnet"
+        : "Wrong Network";
 
-    // Balance
     const rawBalance = await window.ethereum.request({
       method: "eth_getBalance",
       params: [currentAddress, "latest"]
@@ -99,27 +125,22 @@ async function connectWallet() {
 
     balance.textContent = `${coreBalance} CORE`;
 
-    // Buttons
     connectButton.disabled = true;
     connectButton.textContent = "Wallet Connected";
 
-    disconnectButton.style.display = "inline-block";
     copyButton.style.display = "inline-block";
+    disconnectButton.style.display = "inline-block";
 
   } catch (error) {
 
     console.error(error);
 
-    alert(
-      error.message ||
-      "Wallet connection failed."
-    );
+    alert(error.message || "Wallet connection failed.");
 
   }
 
 }
 
-// Disconnect
 function disconnectWallet() {
 
   currentAddress = "";
@@ -132,12 +153,12 @@ function disconnectWallet() {
   connectButton.disabled = false;
   connectButton.textContent = "Connect Wallet";
 
-  disconnectButton.style.display = "none";
   copyButton.style.display = "none";
+  disconnectButton.style.display = "none";
+  switchNetworkButton.style.display = "none";
 
 }
 
-// Copy Address
 async function copyAddress() {
 
   if (!currentAddress) return;
@@ -148,7 +169,7 @@ async function copyAddress() {
 
     alert("Wallet address copied.");
 
-  } catch (err) {
+  } catch {
 
     alert("Unable to copy wallet address.");
 
@@ -156,7 +177,6 @@ async function copyAddress() {
 
 }
 
-// Wallet Changed
 if (window.ethereum) {
 
   window.ethereum.on("accountsChanged", (accounts) => {
@@ -181,18 +201,7 @@ if (window.ethereum) {
 
 }
 
-// Button Events
-connectButton.addEventListener(
-  "click",
-  connectWallet
-);
-
-disconnectButton.addEventListener(
-  "click",
-  disconnectWallet
-);
-
-copyButton.addEventListener(
-  "click",
-  copyAddress
-);
+connectButton.addEventListener("click", connectWallet);
+disconnectButton.addEventListener("click", disconnectWallet);
+copyButton.addEventListener("click", copyAddress);
+switchNetworkButton.addEventListener("click", switchToCore);
