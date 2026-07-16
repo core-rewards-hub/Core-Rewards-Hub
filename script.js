@@ -69,3 +69,93 @@ function showLoader() {
 function hideLoader() {
     loader.classList.add("hidden");
 }
+
+// =======================================
+// Part 2 - Wallet Connection
+// =======================================
+
+async function connectWallet() {
+
+    if (typeof window.ethereum === "undefined") {
+        showToast("Please install MetaMask or Core Wallet.", false);
+        return;
+    }
+
+    try {
+
+        showLoader();
+
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+
+        // Switch to Core Mainnet
+        try {
+
+            await provider.send(
+                "wallet_switchEthereumChain",
+                [{ chainId: CORE_CHAIN.chainId }]
+            );
+
+        } catch (switchError) {
+
+            if (switchError.code === 4902) {
+
+                await provider.send(
+                    "wallet_addEthereumChain",
+                    [CORE_CHAIN]
+                );
+
+            } else {
+
+                throw switchError;
+
+            }
+
+        }
+
+        await provider.send("eth_requestAccounts", []);
+
+        signer = provider.getSigner();
+
+        account = await signer.getAddress();
+
+        const networkInfo = await provider.getNetwork();
+
+        const balanceWei =
+            await provider.getBalance(account);
+
+        const balanceCore =
+            ethers.utils.formatEther(balanceWei);
+
+        // Update Dashboard
+
+        walletAddress.textContent = account;
+
+        status.textContent = "Connected";
+
+        network.textContent =
+            networkInfo.name + " (" + networkInfo.chainId + ")";
+
+        balance.textContent =
+            Number(balanceCore).toFixed(4) + " CORE";
+
+        balanceUsd.textContent =
+            "≈ USD value coming soon";
+
+        portfolioValue.textContent =
+            "$0.00";
+
+        showToast("Wallet connected successfully!");
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast("Connection failed.", false);
+
+    } finally {
+
+        hideLoader();
+
+    }
+
+}
