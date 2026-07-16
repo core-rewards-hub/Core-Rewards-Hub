@@ -159,3 +159,132 @@ async function connectWallet() {
     }
 
 }
+
+// =======================================
+// Part 3 - Actions & Events
+// =======================================
+
+// Disconnect Wallet
+function disconnectWallet() {
+
+    account = null;
+    provider = null;
+    signer = null;
+
+    walletAddress.textContent = "-";
+    status.textContent = "Not Connected";
+    network.textContent = "-";
+    balance.textContent = "0.0000 CORE";
+    balanceUsd.textContent = "≈ $0.00 USD";
+    portfolioValue.textContent = "$0.00";
+
+    showToast("Wallet disconnected");
+
+}
+
+// Refresh Wallet
+async function refreshWallet() {
+
+    if (!account) {
+        showToast("Connect your wallet first.", false);
+        return;
+    }
+
+    try {
+
+        showLoader();
+
+        const balanceWei =
+            await provider.getBalance(account);
+
+        const balanceCore =
+            ethers.utils.formatEther(balanceWei);
+
+        balance.textContent =
+            Number(balanceCore).toFixed(4) + " CORE";
+
+        showToast("Wallet refreshed");
+
+    } catch (err) {
+
+        console.error(err);
+
+        showToast("Refresh failed.", false);
+
+    } finally {
+
+        hideLoader();
+
+    }
+
+}
+
+// Copy Address
+async function copyAddress() {
+
+    if (!account) {
+
+        showToast("No wallet connected.", false);
+
+        return;
+
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(account);
+
+        showToast("Address copied");
+
+    } catch {
+
+        showToast("Copy failed.", false);
+
+    }
+
+}
+
+// Open CoreScan
+function openExplorer() {
+
+    if (!account) {
+
+        showToast("Connect your wallet first.", false);
+
+        return;
+
+    }
+
+    window.open(
+        `https://scan.coredao.org/address/${account}`,
+        "_blank"
+    );
+
+}
+
+// Rewards Button
+function rewardsComingSoon() {
+
+    showToast("Rewards module coming soon!");
+
+}
+
+// Button Events
+
+connectButton?.addEventListener("click", connectWallet);
+
+disconnectButton?.addEventListener("click", disconnectWallet);
+
+refreshButton?.addEventListener("click", refreshWallet);
+
+copyButton?.addEventListener("click", copyAddress);
+
+copyAddressButton?.addEventListener("click", copyAddress);
+
+openExplorerButton?.addEventListener("click", openExplorer);
+
+claimRewardsButton?.addEventListener("click", rewardsComingSoon);
+
+// MetaMask Events
+
+if (
