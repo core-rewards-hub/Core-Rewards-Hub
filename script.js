@@ -1,207 +1,249 @@
-const connectButton = document.getElementById("connectWallet");
-const disconnectButton = document.getElementById("disconnectButton");
-const walletAddress = document.getElementById("walletAddress");
-const status = document.getElementById("status");
-const network = document.getElementById("network");
-const balance = document.getElementById("balance");
-const copyButton = document.getElementById("copyButton");
-const switchNetworkButton = document.getElementById("switchNetworkButton");
+/* ===========================
+   Core Rewards Hub - Phase 3
+   Part 1
+=========================== */
 
-const CORE_CHAIN = {
-  chainId: "0x45c",
-  chainName: "Core Blockchain",
-  nativeCurrency: {
-    name: "CORE",
-    symbol: "CORE",
-    decimals: 18
-  },
-  rpcUrls: [
-    "https://rpc.coredao.org"
-  ],
-  blockExplorerUrls: [
-    "https://scan.coredao.org"
-  ]
-};
-
-let currentAddress = "";
-
-async function switchToCore() {
-  try {
-    await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: CORE_CHAIN.chainId }]
-    });
-
-    connectWallet();
-
-  } catch (error) {
-
-    if (error.code === 4902) {
-
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [CORE_CHAIN]
-      });
-
-      connectWallet();
-
-    } else {
-
-      alert("Unable to switch to Core Mainnet.");
-
-    }
-
-  }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-async function connectWallet() {
+:root{
 
-  if (!window.ethereum) {
-    alert("Please open this website inside MetaMask or Core Wallet.");
-    return;
-  }
+    --bg:#07111f;
+    --bg2:#0d1b2a;
 
-  try {
+    --glass:rgba(255,255,255,.08);
 
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts"
-    });
+    --border:rgba(255,255,255,.15);
 
-    currentAddress = accounts[0];
+    --primary:#1DA1F2;
 
-    let chainId = await window.ethereum.request({
-      method: "eth_chainId"
-    });
+    --secondary:#4CC9F0;
 
-    if (chainId !== CORE_CHAIN.chainId) {
+    --success:#16c784;
 
-      switchNetworkButton.style.display = "inline-block";
+    --danger:#ff5b5b;
 
-      try {
+    --text:#ffffff;
 
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: CORE_CHAIN.chainId }]
-        });
+    --muted:#a9b4c7;
 
-        chainId = CORE_CHAIN.chainId;
-
-      } catch (error) {
-
-        if (error.code === 4902) {
-
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [CORE_CHAIN]
-          });
-
-          chainId = CORE_CHAIN.chainId;
-
-        }
-
-      }
-
-    } else {
-
-      switchNetworkButton.style.display = "none";
-
-    }
-
-    walletAddress.textContent = currentAddress;
-    status.textContent = "Connected";
-
-    network.textContent =
-      chainId === CORE_CHAIN.chainId
-        ? "Core Mainnet"
-        : "Wrong Network";
-
-    const rawBalance = await window.ethereum.request({
-      method: "eth_getBalance",
-      params: [currentAddress, "latest"]
-    });
-
-    const coreBalance =
-      (Number(BigInt(rawBalance)) / 1e18).toFixed(4);
-
-    balance.textContent = `${coreBalance} CORE`;
-
-    connectButton.disabled = true;
-    connectButton.textContent = "Wallet Connected";
-
-    copyButton.style.display = "inline-block";
-    disconnectButton.style.display = "inline-block";
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(error.message || "Wallet connection failed.");
-
-  }
+    --radius:18px;
 
 }
 
-function disconnectWallet() {
+body{
 
-  currentAddress = "";
+    font-family:'Poppins',sans-serif;
 
-  status.textContent = "Not Connected";
-  walletAddress.textContent = "----------";
-  network.textContent = "Unknown";
-  balance.textContent = "0.0000 CORE";
+    background:linear-gradient(135deg,var(--bg),var(--bg2));
 
-  connectButton.disabled = false;
-  connectButton.textContent = "Connect Wallet";
+    color:var(--text);
 
-  copyButton.style.display = "none";
-  disconnectButton.style.display = "none";
-  switchNetworkButton.style.display = "none";
+    min-height:100vh;
+
+    overflow-x:hidden;
+
+    position:relative;
 
 }
 
-async function copyAddress() {
+/* Animated Background */
 
-  if (!currentAddress) return;
+.background{
 
-  try {
+    position:fixed;
 
-    await navigator.clipboard.writeText(currentAddress);
+    inset:0;
 
-    alert("Wallet address copied.");
+    overflow:hidden;
 
-  } catch {
-
-    alert("Unable to copy wallet address.");
-
-  }
+    z-index:-1;
 
 }
 
-if (window.ethereum) {
+.circle{
 
-  window.ethereum.on("accountsChanged", (accounts) => {
+    position:absolute;
 
-    if (accounts.length === 0) {
+    border-radius:50%;
 
-      disconnectWallet();
+    filter:blur(70px);
 
-    } else {
-
-      connectWallet();
-
-    }
-
-  });
-
-  window.ethereum.on("chainChanged", () => {
-
-    connectWallet();
-
-  });
+    animation:float 12s ease-in-out infinite;
 
 }
 
-connectButton.addEventListener("click", connectWallet);
-disconnectButton.addEventListener("click", disconnectWallet);
-copyButton.addEventListener("click", copyAddress);
-switchNetworkButton.addEventListener("click", switchToCore);
+.one{
+
+    width:320px;
+
+    height:320px;
+
+    background:#008cff;
+
+    top:-80px;
+
+    left:-100px;
+
+}
+
+.two{
+
+    width:260px;
+
+    height:260px;
+
+    background:#00d4ff;
+
+    right:-80px;
+
+    top:120px;
+
+    animation-delay:3s;
+
+}
+
+.three{
+
+    width:280px;
+
+    height:280px;
+
+    background:#0047ff;
+
+    bottom:-120px;
+
+    left:35%;
+
+    animation-delay:6s;
+
+}
+
+@keyframes float{
+
+0%,100%{
+
+transform:translateY(0);
+
+}
+
+50%{
+
+transform:translateY(-35px);
+
+}
+
+}
+
+/* Main Container */
+
+.container{
+
+    width:min(1200px,92%);
+
+    margin:auto;
+
+    padding:30px 0 60px;
+
+}
+
+/* Glass Effect */
+
+.glass{
+
+    background:var(--glass);
+
+    border:1px solid var(--border);
+
+    backdrop-filter:blur(16px);
+
+    -webkit-backdrop-filter:blur(16px);
+
+    border-radius:var(--radius);
+
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+}
+
+/* Header */
+
+header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+    flex-wrap:wrap;
+
+}
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.logo i{
+
+    font-size:32px;
+
+    color:var(--secondary);
+
+}
+
+.logo h1{
+
+    font-size:28px;
+
+    font-weight:700;
+
+}
+
+.header-buttons{
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+}
+
+/* Hero */
+
+.hero{
+
+    padding:35px;
+
+    margin-bottom:25px;
+
+}
+
+.hero h2{
+
+    font-size:32px;
+
+    margin-bottom:12px;
+
+}
+
+.hero p{
+
+    color:var(--muted);
+
+    line-height:1.8;
+
+}
