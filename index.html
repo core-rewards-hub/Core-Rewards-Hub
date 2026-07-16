@@ -1,102 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Core Rewards Hub</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Core Rewards Hub</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Ethers.js -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">
-    <h2>Core Rewards Hub</h2>
-  </div>
+<!-- Animated Background -->
+<div class="background">
+    <div class="circle one"></div>
+    <div class="circle two"></div>
+    <div class="circle three"></div>
+</div>
 
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">Dashboard</a>
-    <a href="#">Projects</a>
-    <a href="#">Learn</a>
-    <a href="#">News</a>
-  </nav>
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Loading Spinner -->
+<div id="loader" class="loader hidden">
+    <div class="spinner"></div>
+    <p>Connecting Wallet...</p>
+</div>
+
+<div class="container">
+
+<header>
+
+<div class="logo">
+
+<i class="fa-solid fa-coins"></i>
+
+<h1>Core Rewards Hub</h1>
+
+</div>
+
+<div class="header-buttons">
+
+<button id="connectWallet" class="primary-btn">
+
+<i class="fa-solid fa-wallet"></i>
+
+Connect Wallet
+
+</button>
+
+<button id="disconnectButton" class="secondary-btn">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Disconnect
+
+</button>
+
+</div>
+
 </header>
 
-<section class="hero">
+<!-- Hero -->
 
-  <h1>Welcome to the Future of Core DAO</h1>
+<section class="hero glass">
 
-  <p>
-    Connect your wallet, monitor your CORE assets,
-    discover ecosystem projects and stay updated.
-  </p>
+<h2>
 
-  <div class="wallet-card">
+Welcome to Core Rewards Hub
 
-    <h2>Wallet Dashboard</h2>
+</h2>
 
-    <p><strong>Status:</strong></p>
-    <p id="status">Not Connected</p>
+<p>
 
-    <p><strong>Wallet Address:</strong></p>
-    <p id="walletAddress">----------</p>
+Securely connect your wallet, monitor your CORE assets,
+and access rewards from one modern dashboard.
 
-    <p><strong>Network:</strong></p>
-    <p id="network">Unknown</p>
+</p>
 
-    <p><strong>Balance:</strong></p>
-    <p id="balance">0.0000 CORE</p>
+</section>
 
-    <button id="connectWallet">
-      Connect Wallet
-    </button>
+<!-- Dashboard -->
 
-    <button id="switchNetworkButton" style="display:none;">
-  Switch to Core DAO
+<section class="dashboard">
+
+<!-- Wallet Card -->
+
+<div class="card glass">
+
+<div class="card-header">
+
+<i class="fa-solid fa-wallet"></i>
+
+<h3>Wallet</h3>
+
+</div>
+
+<div class="card-content">
+
+<p>
+
+<strong>Status</strong>
+
+</p>
+
+<span id="status">
+
+Not Connected
+
+</span>
+
+<hr>
+
+<p>
+
+<strong>Address</strong>
+
+</p>
+
+<span id="walletAddress">
+
+-
+
+</span>
+
+<button id="copyButton" class="small-btn">
+
+<i class="fa-solid fa-copy"></i>
+
+Copy
+
 </button>
-   
-    <button id="copyButton" style="display:none;">
-      Copy Address
-    </button>
 
-    <button id="disconnectButton" style="display:none;">
-      Disconnect Wallet
-    </button>
+</div>
 
-  </div>
+</div>
 
-</section>
+<!-- Network Card -->
 
-<section class="features">
+<div class="card glass">
 
-  <div class="card">
-    <h3>Wallet</h3>
-    <p>Secure wallet connection powered by MetaMask and Core Wallet.</p>
-  </div>
+<div class="card-header">
 
-  <div class="card">
-    <h3>CORE Price</h3>
-    <p>Live market price coming soon.</p>
-  </div>
+<i class="fa-solid fa-network-wired"></i>
 
-  <div class="card">
-    <h3>Projects</h3>
-    <p>Explore trusted Core DAO ecosystem projects.</p>
-  </div>
+<h3>Network</h3>
 
-  <div class="card">
-    <h3>Learn</h3>
-    <p>Beginner and advanced blockchain tutorials.</p>
-  </div>
+</div>
 
-</section>
+<div class="card-content">
 
-<footer>
-  <p>© 2026 Core Rewards Hub. All Rights Reserved.</p>
-</footer>
+<p id="network">
 
-<script src="script.js"></script>
+-
 
-</body>
-</html>
+</p>
+
+<hr>
+
+<p>
+
+Current Chain
+
+</p>
+
+<span>
+
+Core Mainnet
+
+</span>
+
+</div>
+
+</div>
